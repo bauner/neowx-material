@@ -62,6 +62,16 @@
                             </div>
                             <div class="col-3 text-muted font-small hi-text"></div>
                         </div>
+                 ## FIX: Jahressumme (Heute) - Nur den letzten Wert anzeigen, kein Min/Max
+                  #else if $name == 'yearTempsum'
+
+                <div class="row">
+                    <div class="col-3 text-muted font-small"></div>
+                    <div class="col-6">
+                        <h4 class="h2-responsive">$yesterday.yearTempsum.last</h4>
+                    </div>
+                    <div class="col-3 text-muted font-small hi-text"></div>
+                </div>
                     #else
                         <div class="row">
                             <div class="col-3 text-muted font-small lo-text">
@@ -343,7 +353,7 @@
         #silent $chart_segments.append($chart_cur)
         #set $p_title_c = $ci.strip()[4:].strip()
         #set $chart_cur = {'type': 'hrc', 'title': $p_title_c, 'items': []}
-    #else if $ci not in $chart_seen
+    #else if $ci not in $chart_seen and $ci != 'yearTempsum'
         #silent $chart_seen.add($ci)
         #silent $chart_cur['items'].append($ci)
     #end if
@@ -763,7 +773,7 @@
             #set $default_chart_series = {'windDir': 'wind'}
 
             #for $x in $Extras.Appearance.charts_order
-                #if not $isPanelMarker($x) and not $x.startswith('customChart') and $x not in $processed_charts
+                #if not $isPanelMarker($x) and not $x.startswith('customChart') and $x not in $processed_charts and $x != 'yearTempsum'
                     #silent $processed_charts.add($x)
                     #if $getVar('yesterday.' + $x + '.has_data')
                         #set $c_type = $default_chart_types.get($x, 'area')
@@ -778,7 +788,7 @@
             // Custom charts (dynamically generated from skin.conf [[Appearance]] [[[customChart*]]] sections)
             #set $seen_custom_charts = set()
             #for $x in $Extras.Appearance.charts_order
-                #if not $isPanelMarker($x) and $x.startswith('customChart') and $x not in $seen_custom_charts
+                #if not $isPanelMarker($x) and $x.startswith('customChart') and $x not in $seen_custom_charts and $x != 'yearTempsum'
                     #silent $seen_custom_charts.add($x)
                     #set $cc = $Extras.Appearance.get($x, {})
                     #if $cc
