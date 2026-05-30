@@ -884,7 +884,7 @@
             // --- Default single-series charts: loop over charts_order ---
             // Charts added to $processed_charts above are skipped here
             // Chart type overrides for charts that are not 'area' (default)
-            #set $default_chart_types = {'windDir': 'line', 'rain': 'bar', 'snowDepth': 'bar', 'lightning_strike_count': 'bar', 'lightning_noise_count': 'bar', 'lightning_disturber_count': 'bar', 'lightning_distance': 'bar'}
+            #set $default_chart_types = {'windDir': 'line', 'rain': 'bar', 'snowDepth': 'bar', 'lightning_strike_count': 'bar', 'lightning_noise_count': 'bar', 'lightning_disturber_count': 'bar', 'lightning_distance': 'bar', 'ET': 'bar'}
             // Aggregate column overrides for charts that are not 'avg' (default)
             #set $default_chart_columns = {'windDir': 'vecdir', 'ET': 'sum', 'rain': 'sum', 'UV': 'max', 'radiation': 'max', 'luminosity': 'max', 'snowDepth': 'sum', 'lightning_strike_count': 'sum'}
             // Series1 field overrides for charts where the series field name differs from the chart name
