@@ -140,6 +140,22 @@
 
             #if $name == 'windSpeed'
 
+                ## --- LOGIK START ---
+                #set $raw_val = $current.windSpeed.raw
+                #set $val_style = ""
+                
+                #if $raw_val is not None
+                    
+                    #if $raw_val <= 28
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val <= 88
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if
+                #end if
+                ## --- LOGIK ENDE ---
+
                 <div class="row">
                     <div class="col-3 text-muted font-small lo-text">
                         $day.wind.avg <br>
@@ -147,7 +163,8 @@
                     </div>
                     <div class="col-6">
                         <h4 class="h2-responsive">
-                            $current.windSpeed $current.windDir.ordinal_compass
+                            <span style="$val_style">$current.windSpeed</span> 
+                            $current.windDir.ordinal_compass
                         </h4>
                     </div>
                     <div class="col-3 text-muted font-small hi-text">
@@ -158,7 +175,18 @@
                     </div>
                 </div>
 
-            #else if $name == 'rain'
+                #else if $name == 'rain'
+
+                ## --- LOGIK START ---
+                #set $val_style = ""
+                ## Wir holen uns den nackten Zahlenwert der Tagessumme
+                #set $rain_raw = $day.rain.sum.raw
+                
+                #if $rain_raw is not None and $rain_raw > 0
+                    ## Wenn es heute schon geregnet hat (> 0), dann Dunkelblau
+                    #set $val_style = "color: #3f51b5 !important;"
+                #end if
+                ## --- LOGIK ENDE ---
 
                 <div class="row">
                     <div class="col-3 text-muted font-small lo-text">
@@ -166,7 +194,11 @@
                         $obs.label.rainRate
                     </div>
                     <div class="col-6">
-                        <h4 class="h2-responsive">$day.rain.sum</h4>
+                        <h4 class="h2-responsive">
+                            ## HIER DIE ÄNDERUNG:
+                            ## Den Wert in ein span packen, damit die Farbe greift
+                            <span style="$val_style">$day.rain.sum</span>
+                        </h4>
                     </div>
                     <div class="col-3 text-muted font-small hi-text">
                         $day.rainRate.max <br>
@@ -174,13 +206,31 @@
                     </div>
                 </div>
 
-            #else if $name in set(['lightning_strike_count', 'windrun', 'ET'])
+#else if $name in set(['lightning_strike_count', 'windrun', 'ET'])
+
+                ## --- LOGIK START: Blitze ---
+                #set $val_style = ""
+                #if $name == 'lightning_strike_count'
+                    #set $lightning_raw = $day.lightning_strike_count.sum.raw
+                    #if $lightning_raw is not None
+                        #if $lightning_raw > 0
+                            ## Wenn es heute schon geblitzt hat (> 0), dann rot
+                            #set $val_style = "color: #f44336 !important;"
+                        #else
+                            ## Wenn 0 Blitze, dann grün
+                            #set $val_style = "color: #4caf50 !important;"
+                        #end if
+                    #end if
+                #end if
+                ## --- LOGIK ENDE ---
 
                 ## Sum-only display: no min/max context
                 <div class="row">
                     <div class="col-3 text-muted font-small lo-text"></div>
                     <div class="col-6">
-                        <h4 class="h2-responsive">$getVar('day.' + name + '.sum')</h4>
+                        <h4 class="h2-responsive">
+                            <span style="$val_style">$getVar('day.' + name + '.sum')</span>
+                        </h4>
                     </div>
                     <div class="col-3 text-muted font-small hi-text"></div>
                 </div>
@@ -194,13 +244,179 @@
                 #else
                     #set $center_val = $getVar('current.' + name)
                 #end if
+
+                ## --- LOGIK START: Restliche Sensoren ---
+                #set $n = $name.strip()
+                #set $val_style = ""
+                #set $raw_val = $getVar('current.' + $n + '.raw')
+
+                ## SGP41 VOC Index
+                #if $n == 'sgp_voc_out' and $raw_val is not None
+                    #if $raw_val <= 200
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val <= 300
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if
+                    
+                ## tvoc_out
+                #elif $n == 'tvoc_out' and $raw_val is not None
+                    #if $raw_val <= 150
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val <= 250
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if                    
+                
+                ## SGP41 NOx Index
+                #elif $n == 'sgp_nox_out' and $raw_val is not None
+                    #if $raw_val <= 120
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val <= 160
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if
+                    
+                #elif $n == 'radon' and $raw_val is not None
+                    #if $raw_val <= 150
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val <= 300
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if
+         
+                ## pm2_5_out
+                #elif $n == 'pm2_5_out' and $raw_val is not None
+                    #if $raw_val <= 15
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val <= 35
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if
+                    
+                ## pm10_0_out
+                #elif $n == 'pm10_0_out' and $raw_val is not None
+                    #if $raw_val <= 25
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val <= 50
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if
+                    
+                ## co2_out
+                #elif $n == 'co2_out' and $raw_val is not None
+                    #if $raw_val <= 1000
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val <= 2000
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if
+                    
+                ## o3
+                #elif $n == 'o3' and $raw_val is not None
+                    #if $raw_val < 90
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val < 120
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if                    
+
+                #elif $n == 'heatindex' and $raw_val is not None
+                    #if $raw_val <= 0
+                        #set $val_style = "color: #3f51b5 !important;" ##dunkelblau         
+                    #elif $raw_val <= 18
+                        #set $val_style = "color: #2196f3 !important;" ##hellblau
+                    #elif $raw_val <= 22
+                        #set $val_style = "color: #4CAF50 !important;" ##grün
+                    #elif $raw_val <= 25
+                        #set $val_style = "color: #FF9800 !important;" ##orange
+                      #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if                            
+
+                #elif $n == 'outTemp' and $raw_val is not None
+                    #if $raw_val <= 0
+                        #set $val_style = "color: #3f51b5 !important;" ##dunkelblau         
+                    #elif $raw_val <= 18
+                        #set $val_style = "color: #2196f3 !important;" ##hellblau
+                    #elif $raw_val <= 22
+                        #set $val_style = "color: #4CAF50 !important;" ##grün
+                    #elif $raw_val <= 25
+                        #set $val_style = "color: #FF9800 !important;" ##orange
+                      #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if        
+                    
+                #elif $n == 'appTemp' and $raw_val is not None
+                    #if $raw_val <= 0
+                        #set $val_style = "color: #3f51b5 !important;" ##dunkelblau         
+                    #elif $raw_val <= 18
+                        #set $val_style = "color: #2196f3 !important;" ##hellblau
+                    #elif $raw_val <= 22
+                        #set $val_style = "color: #4CAF50 !important;" ##grün
+                    #elif $raw_val <= 25
+                        #set $val_style = "color: #FF9800 !important;" ##orange
+                      #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if                            
+                                  
+                #elif $n == 'windchill' and $raw_val is not None
+                    #if $raw_val <= 0
+                        #set $val_style = "color: #3f51b5 !important;" ##dunkelblau         
+                    #elif $raw_val <= 18
+                        #set $val_style = "color: #2196f3 !important;" ##hellblau
+                    #elif $raw_val <= 22
+                        #set $val_style = "color: #4CAF50 !important;" ##grün
+                    #elif $raw_val <= 25
+                        #set $val_style = "color: #FF9800 !important;" ##orange
+                      #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if      
+                    
+                ## taupunkt
+                #elif $n == 'dewpoint' and $raw_val is not None
+                    #if $raw_val <= 15
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val <= 17
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if     
+
+                ## UV
+                #elif $n == 'UV' and $raw_val is not None
+                    #if $raw_val <= 2
+                        #set $val_style = "color: #4CAF50 !important;"
+                    #elif $raw_val <= 5
+                        #set $val_style = "color: #FF9800 !important;"
+                    #else
+                        #set $val_style = "color: #F44336 !important;"
+                    #end if     
+                    
+                ##Feuchte absolut
+                #elif $n == 'outHumidityAbs' and $raw_val is not None
+                    #set $val_style = "color: #3f51b5 !important;" ##dunkelblau            
+                    
+                #end if
+                ## --- LOGIK ENDE ---
+
                 <div class="row">
                     <div class="col-3 text-muted font-small lo-text">
                         $getVar('day.' + name + '.min') <br>
                         ($getVar('day.' + name + '.mintime').format($card_datetime))
                     </div>
                     <div class="col-6">
-                        <h4 class="h2-responsive">$center_val</h4>
+                        <h4 class="h2-responsive">
+                            <span style="$val_style">$center_val</span>
+                        </h4>
                     </div>
                     <div class="col-3 text-muted font-small hi-text">
                         $getVar('day.' + name + '.max') <br>

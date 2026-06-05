@@ -36,6 +36,16 @@
                             <td>$station.os_uptime.long_form</td>
                         </tr>
                     #end if
+                    #if $Extras.Footer.show_impressum == "yes"
+                        <tr>
+                            <td>
+                                <a href="impressum.html">
+                                    $gettext("impressum")
+                                </a>
+                            </td>
+                            <td></td>
+                        </tr>
+                    #end if
                     #if $Extras.Footer.show_telemetry == "yes"
                         <tr>
                             <td>
@@ -46,6 +56,14 @@
                             <td></td>
                         </tr>
                     #end if
+                        <tr>
+                            <td>
+                                <a href="privat/">
+                                    Innensensoren (Privat)
+                                </a>
+                            </td>
+                            <td></td>
+                        </tr>                    
                 </table>
 
                 #if $Extras.Footer.about != ""
@@ -94,7 +112,7 @@
                     #end if
                     #if $Extras.Footer.link4_url != ""
                         <li>
-                            <a href="$Extras.Footer.link4_url" target="_blank" rel="noopener">$Extras.Footer.link4_label</a>
+                            <a href="$Extras.Footer.link4_url" rel="noopener">$Extras.Footer.link4_label</a>
                         </li>
                     #end if
                 </ul>
