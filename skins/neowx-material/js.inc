@@ -19,9 +19,11 @@
 #end if
 <script src="js/vendor/apexcharts/apexcharts.min.js"></script>
 ## NeoWX Material chart helpers (shared date formatter)
-<script type="text/javascript" src="js/neowx-date-format.js"></script>
+<script type="text/javascript" src="js/neowx-date-format.js?v=$Extras.version"></script>
 ## NeoWX Material App
-<script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="js/app.js?v=$Extras.version"></script>
+## Keeps header/footer chrome current on non-current (incl. frozen archive) pages
+<script type="text/javascript" src="js/neowx-live.js?v=$Extras.version"></script>
 
 <script type="text/javascript">
     // Show/update status label only if configured threshold > 0 in skin.conf
@@ -55,6 +57,77 @@
 
 ## Global apexcharts config
 <script type="text/javascript">
+    // Charts drawn in "align" mode (the only ones with xaxis.min+max set) keep
+    // their calendar alignment through a zoom: record their original aligned
+    // axis at mount, re-snap on zoom, and restore the original on reset zoom.
+    // fixed/auto charts are left alone. Granularity follows the zoom width,
+    // same as graph_align_axis.inc server-side: hour tier (<=2 days), day tier
+    // (<=62 days), else even spacing.
+    var NEOWX_ALIGNED = {};
+    function neowxMountedHandler(chartContext) {
+        try {
+            var x = chartContext.w.config.xaxis;
+            if (x && x.min != null && x.max != null) {
+                NEOWX_ALIGNED[chartContext.w.globals.chartID] =
+                    { min: x.min, max: x.max, tickAmount: x.tickAmount };
+            }
+        } catch (e) {}
+    }
+    function neowxAlignAxis(minMs, maxMs) {
+        var secs = (maxMs - minMs) / 1000;
+        if (secs < 3600) { secs = 3600; }
+        if (secs <= 172800) {
+            var hours = Math.ceil(secs / 3600);
+            var hs = Math.max(1, Math.round(hours / 6));
+            var ht = Math.ceil(hours / hs);
+            var h0 = moment(minMs).startOf('hour');
+            return { min: h0.valueOf(), max: h0.clone().add(ht * hs, 'hours').valueOf(), tickAmount: ht };
+        }
+        var days = Math.ceil(secs / 86400);
+        if (days <= 62) {
+            var ds = Math.max(1, Math.round(days / 12));
+            var dt = Math.ceil(days / ds);
+            var d0 = moment(minMs).startOf('day');
+            return { min: d0.valueOf(), max: d0.clone().add(dt * ds, 'days').valueOf(), tickAmount: dt };
+        }
+        return { min: minMs, max: maxMs, tickAmount: 12 };
+    }
+    var _neowxZooming = false;
+    var _neowxResetting = false;
+    function neowxZoomHandler(chartContext, opts) {
+        if (_neowxZooming || _neowxResetting) { return; }
+        try { if (!NEOWX_ALIGNED[chartContext.w.globals.chartID]) { return; } } catch (e) { return; }
+        if (!opts || !opts.xaxis || opts.xaxis.min == null || opts.xaxis.max == null) { return; }
+        var a = neowxAlignAxis(opts.xaxis.min, opts.xaxis.max);
+        _neowxZooming = true;
+        try {
+            var p = chartContext.updateOptions(
+                { xaxis: { min: a.min, max: a.max, tickAmount: a.tickAmount } }, false, false);
+            if (p && p.then) { p.then(function(){ _neowxZooming = false; }, function(){ _neowxZooming = false; }); }
+            else { _neowxZooming = false; }
+        } catch (e) { _neowxZooming = false; }
+    }
+    function neowxResetDone() { _neowxZooming = false; _neowxResetting = false; }
+    function neowxBeforeResetHandler(chartContext) {
+        // Restore the ORIGINAL aligned min/max/tickAmount captured at mount. beforeResetZoom only
+        // positions min/max, so re-apply the exact tickAmount right after via updateOptions.
+        try {
+            var o = NEOWX_ALIGNED[chartContext.w.globals.chartID];
+            if (!o) { return; }
+            _neowxResetting = true;
+            setTimeout(function() {
+                try {
+                    _neowxZooming = true;
+                    var p = chartContext.updateOptions(
+                        { xaxis: { min: o.min, max: o.max, tickAmount: o.tickAmount } }, false, false);
+                    if (p && p.then) { p.then(neowxResetDone, neowxResetDone); }
+                    else { neowxResetDone(); }
+                } catch (e) { neowxResetDone(); }
+            }, 0);
+            return { xaxis: { min: o.min, max: o.max } };
+        } catch (e) {}
+    }
+
     var config_mode = '${Extras.Appearance.mode}';
     var theme_mode = 'light';
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -96,7 +169,7 @@
                     csv: {
                         headerCategory: 'DateTime',
                         dateFormatter(timestamp) {
-                            return moment.unix(timestamp).toISOString()
+                            return moment(timestamp).toISOString()
                         }
                     }
                 }
@@ -107,6 +180,11 @@
             defaultLocale: '$lang',
             animations: {
                 enabled: false
+            },
+            events: {
+                mounted: neowxMountedHandler,
+                zoomed: neowxZoomHandler,
+                beforeResetZoom: neowxBeforeResetHandler
             },
         },
     }
