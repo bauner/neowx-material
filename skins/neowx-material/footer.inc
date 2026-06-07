@@ -175,5 +175,9 @@
         #end if
     </div>
     ## Copyright
+   <div class="visitor-counter" style="text-align: center; margin-top: 10px;">
+    <span class="BZgesamt"></span>
+    <script language="JavaScript" src="https://www.besucherzaehler-kostenlos.de/js/counter.js.php?count=1&id=wetter-birkenfeld.de&start=0&design=6"></script>
+   </div>
 
 </footer>
