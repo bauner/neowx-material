@@ -181,6 +181,63 @@
                                 </div>
                             #end if
                             
+                            #if $alltime.pm2_5_in.has_data
+                                <div class="card card-body">
+                                    <h4 class="h5-responsive $Extras.color-text"><i class="wi wi-dust"></i>
+                                    Feinstaub PM2.5 Innen Durchschnitt</h4>
+                                    $avg_pm2_5_in_table
+                                </div>
+                            #end if
+
+                            #if $alltime.pm10_0_in.has_data
+                                <div class="card card-body">
+                                    <h4 class="h5-responsive $Extras.color-text"><i class="wi wi-dust"></i>
+                                    Feinstaub PM10 Innen Durchschnitt</h4>
+                                    $avg_pm10_0_in_table
+                                </div>
+                            #end if
+
+                            #if $alltime.co2_in.has_data
+                                <div class="card card-body">
+                                    <h4 class="h5-responsive $Extras.color-text"><i class="wi wi-dust"></i>
+                                    CO2 Innen Durchschnitt</h4>
+                                    $avg_co2_in_table
+                                </div>
+                            #end if
+
+                            #if $alltime.co.has_data
+                                <div class="card card-body">
+                                    <h4 class="h5-responsive $Extras.color-text"><i class="wi wi-dust"></i>
+                                    CO Innen Durchschnitt</h4>
+                                    $avg_co_table
+                                </div>
+                            #end if
+                            
+                            #if $alltime.tvoc_in.has_data
+                                <div class="card card-body">
+                                    <h4 class="h5-responsive $Extras.color-text"><i class="wi wi-dust"></i>
+                                    TVOC Innen Durchschnitt</h4>
+                                    $avg_tvoc_in_table
+                                </div>
+                            #end if
+                            
+                            #if $alltime.ch2o.has_data
+                                <div class="card card-body">
+                                    <h4 class="h5-responsive $Extras.color-text"><i class="wi wi-dust"></i>
+                                    Formaldehyd Innen Durchschnitt</h4>
+                                    $avg_ch2o_table
+                                </div>
+                            #end if                            
+                            
+                            #if $alltime.o2.has_data
+                                <div class="card card-body">
+                                    <h4 class="h5-responsive $Extras.color-text"><i class="wi wi-dust"></i>
+                                    O2 Innen Durchschnitt</h4>
+                                    $avg_o2_table
+                                </div>
+                            #end if                            
+
+
                             #if $alltime.radon.has_data
                                 <div class="card card-body">
                                     <h4 class="h5-responsive $Extras.color-text">
@@ -484,6 +541,134 @@
                         <td style="font-size:16px;">$year.sgp_voc_out.mintime</td>
                     </tr>
                     #end if
+
+                   #if $year.pm2_5_in.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> Feinstaub PM2.5 Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$year.pm2_5_in.max</td>
+                        <td style="font-size:16px;">$year.pm2_5_in.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$year.pm2_5_in.min</td>
+                        <td style="font-size:16px;">$year.pm2_5_in.mintime</td>
+                    </tr>
+                    #end if
+
+                    #if $year.pm10_0_in.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> Feinstaub PM10 Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$year.pm10_0_in.max</td>
+                        <td style="font-size:16px;">$year.pm10_0_in.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$year.pm10_0_in.min</td>
+                        <td style="font-size:16px;">$year.pm10_0_in.mintime</td>
+                    </tr>
+                    #end if
+
+
+                   #if $year.co2_in.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> CO2 Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$year.co2_in.max</td>
+                        <td style="font-size:16px;">$year.co2_in.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$year.co2_in.min</td>
+                        <td style="font-size:16px;">$year.co2_in.mintime</td>
+                    </tr>
+                    #end if
+                    
+                   #if $year.co.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> CO Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$year.co.max</td>
+                        <td style="font-size:16px;">$year.co.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$year.co.min</td>
+                        <td style="font-size:16px;">$year.co.mintime</td>
+                    </tr>
+                    #end if                    
+
+
+                   #if $year.tvoc_in.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> TVOC Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$year.tvoc_in.max</td>
+                        <td style="font-size:16px;">$year.tvoc_in.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$year.tvoc_in.min</td>
+                        <td style="font-size:16px;">$year.tvoc_in.mintime</td>
+                    </tr>
+                    #end if
+                    
+                   #if $year.ch2o.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> Formaldehyd Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$year.ch2o.max</td>
+                        <td style="font-size:16px;">$year.ch2o.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$year.ch2o.min</td>
+                        <td style="font-size:16px;">$year.ch2o.mintime</td>
+                    </tr>
+                    #end if                    
+                    
+                   #if $year.o2.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> O2 Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$year.o2.max</td>
+                        <td style="font-size:16px;">$year.o2.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$year.o2.min</td>
+                        <td style="font-size:16px;">$year.o2.mintime</td>
+                    </tr>
+                    #end if                    
 
 
                    #if $year.radon.has_data
@@ -804,6 +989,131 @@
                     </tr>
                     #end if      
 
+                    #if $alltime.pm2_5_in.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> Feinstaub PM2.5 Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$alltime.pm2_5_in.max</td>
+                        <td style="font-size:16px;">$alltime.pm2_5_in.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$alltime.pm2_5_in.min</td>
+                        <td style="font-size:16px;">$alltime.pm2_5_in.mintime</td>
+                    </tr>
+                    #end if
+
+                    #if $alltime.pm10_0_in.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> Feinstaub PM10 Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$alltime.pm10_0_in.max</td>
+                        <td style="font-size:16px;">$alltime.pm10_0_in.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$alltime.pm10_0_in.min</td>
+                        <td style="font-size:16px;">$alltime.pm10_0_in.mintime</td>
+                    </tr>
+                    #end if
+
+                    #if $alltime.co2_in.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> CO2 Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$alltime.co2_in.max</td>
+                        <td style="font-size:16px;">$alltime.co2_in.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$alltime.co2_in.min</td>
+                        <td style="font-size:16px;">$alltime.co2_in.mintime</td>
+                    </tr>
+                    #end if
+                    
+                    #if $alltime.co.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> CO Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$alltime.co.max</td>
+                        <td style="font-size:16px;">$alltime.co.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$alltime.co.min</td>
+                        <td style="font-size:16px;">$alltime.co.mintime</td>
+                    </tr>
+                    #end if                    
+
+                    #if $alltime.tvoc_in.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> TVOC Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$alltime.tvoc_in.max</td>
+                        <td style="font-size:16px;">$alltime.tvoc_in.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$alltime.tvoc_in.min</td>
+                        <td style="font-size:16px;">$alltime.tvoc_in.mintime</td>
+                    </tr>
+                    #end if
+                    
+                    #if $alltime.ch2o.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> Formaldehyd Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$alltime.ch2o.max</td>
+                        <td style="font-size:16px;">$alltime.ch2o.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$alltime.ch2o.min</td>
+                        <td style="font-size:16px;">$alltime.ch2o.mintime</td>
+                    </tr>
+                    #end if                    
+
+                    #if $alltime.o2.has_data
+                    <tr>
+                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
+                            <i class="wi wi-dust"></i> O2 Innen
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("highest")</td>
+                        <td style="font-size:16px;">$alltime.o2.max</td>
+                        <td style="font-size:16px;">$alltime.o2.maxtime</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:16px;">$gettext("lowest")</td>
+                        <td style="font-size:16px;">$alltime.o2.min</td>
+                        <td style="font-size:16px;">$alltime.o2.mintime</td>
+                    </tr>
+                    #end if
 
 
                     #if $alltime.radon.has_data

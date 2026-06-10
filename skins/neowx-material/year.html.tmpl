@@ -293,7 +293,223 @@
                             
                         ## Feuchte absolut
                         #elif $n == 'outHumidityAbs' and $raw_val is not None
-                            #set $val_style = "color: #3f51b5 !important;"             
+                            #set $val_style = "color: #3f51b5 !important;"      
+                            
+                        #elif $n == 'inHumidityAbs' and $raw_val is not None
+                            #set $val_style = "color: #3f51b5 !important;"                                    
+                            
+                        #elif $n == 'extraHumid2' and $raw_val is not None
+                            #if $raw_val < 30
+                                #set $val_style = "color: #F44336  !important;"         
+                            #elif $raw_val <= 39
+                                #set $val_style = "color: #FF9800 !important;" 
+                            #elif $raw_val <= 60
+                                #set $val_style = "color: #4CAF50 !important;" 
+                            #elif $raw_val <= 69
+                                #set $val_style = "color: #FF9800 !important;" 
+                              #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if     
+                            
+                        #elif $n == 'extraTemp2' and $raw_val is not None
+                            #if $raw_val <= 0
+                                #set $val_style = "color: #3f51b5 !important;"         
+                            #elif $raw_val < 18
+                                #set $val_style = "color: #2196f3 !important;" 
+                            #elif $raw_val <= 22
+                                #set $val_style = "color: #4CAF50 !important;" 
+                            #elif $raw_val <= 25
+                                #set $val_style = "color: #FF9800 !important;"                               
+                              #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if      
+                            
+                        #elif $n == 'extraHumid3' and $raw_val is not None
+                            #if $raw_val < 30
+                                #set $val_style = "color: #F44336  !important;"         
+                            #elif $raw_val <= 39
+                                #set $val_style = "color: #FF9800 !important;" 
+                            #elif $raw_val <= 60
+                                #set $val_style = "color: #4CAF50 !important;" 
+                            #elif $raw_val <= 69
+                                #set $val_style = "color: #FF9800 !important;" 
+                              #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if     
+                            
+                        #elif $n == 'extraTemp3' and $raw_val is not None
+                            #if $raw_val <= 0
+                                #set $val_style = "color: #3f51b5 !important;"         
+                            #elif $raw_val < 18
+                                #set $val_style = "color: #2196f3 !important;" 
+                            #elif $raw_val <= 22
+                                #set $val_style = "color: #4CAF50 !important;" 
+                            #elif $raw_val <= 25
+                                #set $val_style = "color: #FF9800 !important;"                               
+                              #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if              
+                            
+                        #elif $n == 'extraHumid4' and $raw_val is not None
+                            #if $raw_val < 30
+                                #set $val_style = "color: #F44336  !important;"         
+                            #elif $raw_val <= 39
+                                #set $val_style = "color: #FF9800 !important;" 
+                            #elif $raw_val <= 60
+                                #set $val_style = "color: #4CAF50 !important;" 
+                            #elif $raw_val <= 69
+                                #set $val_style = "color: #FF9800 !important;" 
+                              #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if     
+                            
+                        #elif $n == 'extraTemp4' and $raw_val is not None
+                            #if $raw_val <= 0
+                                #set $val_style = "color: #3f51b5 !important;"         
+                            #elif $raw_val < 18
+                                #set $val_style = "color: #2196f3 !important;" 
+                            #elif $raw_val <= 22
+                                #set $val_style = "color: #4CAF50 !important;" 
+                            #elif $raw_val <= 25
+                                #set $val_style = "color: #FF9800 !important;"                               
+                              #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if                                                         
+                            
+                        #elif $n == 'extraHumid1' and $raw_val is not None
+                            #if $raw_val < 30
+                                #set $val_style = "color: #F44336  !important;"         
+                            #elif $raw_val <= 39
+                                #set $val_style = "color: #FF9800 !important;" 
+                            #elif $raw_val <= 60
+                                #set $val_style = "color: #4CAF50 !important;" 
+                            #elif $raw_val <= 69
+                                #set $val_style = "color: #FF9800 !important;" 
+                              #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if     
+                            
+                        #elif $n == 'extraTemp1' and $raw_val is not None
+                            #if $raw_val <= 0
+                                #set $val_style = "color: #3f51b5 !important;"         
+                            #elif $raw_val < 18
+                                #set $val_style = "color: #2196f3 !important;" 
+                            #elif $raw_val <= 22
+                                #set $val_style = "color: #4CAF50 !important;" 
+                            #elif $raw_val <= 25
+                                #set $val_style = "color: #FF9800 !important;"                               
+                              #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if        
+                            
+                        #elif $n == 'inHumidity' and $raw_val is not None
+                            #if $raw_val < 30
+                                #set $val_style = "color: #F44336  !important;"         
+                            #elif $raw_val <= 39
+                                #set $val_style = "color: #FF9800 !important;" 
+                            #elif $raw_val <= 60
+                                #set $val_style = "color: #4CAF50 !important;" 
+                            #elif $raw_val <= 69
+                                #set $val_style = "color: #FF9800 !important;" 
+                              #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if     
+                            
+                        #elif $n == 'inTemp' and $raw_val is not None
+                            #if $raw_val <= 0
+                                #set $val_style = "color: #3f51b5 !important;"         
+                            #elif $raw_val < 18
+                                #set $val_style = "color: #2196f3 !important;" 
+                            #elif $raw_val <= 22
+                                #set $val_style = "color: #4CAF50 !important;" 
+                            #elif $raw_val <= 25
+                                #set $val_style = "color: #FF9800 !important;"                               
+                              #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if                                                            
+                            
+                        ## co2_in
+                        #elif $n == 'co2_in' and $raw_val is not None
+                            #if $raw_val <= 1000
+                                #set $val_style = "color: #4CAF50 !important;"
+                            #elif $raw_val <= 2000
+                                #set $val_style = "color: #FF9800 !important;"
+                            #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if      
+                            
+                        ## co
+                        #elif $n == 'co' and $raw_val is not None
+                            #if $raw_val <= 30
+                                #set $val_style = "color: #4CAF50 !important;"
+                            #elif $raw_val <= 50
+                                #set $val_style = "color: #FF9800 !important;"
+                            #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if             
+                            
+                        ## o2
+                        #elif $n == 'o2' and $raw_val is not None
+                            #if $raw_val <= 18.0
+                                #set $val_style = "color: #F44336 !important;"
+                            #elif $raw_val <= 20.0
+                                #set $val_style = "color: #FF9800 !important;"
+                            #else
+                                #set $val_style = "color: #4CAF50 !important;"
+                            #end if           
+                            
+                        ## ch2o
+                        #elif $n == 'ch2o' and $raw_val is not None
+                            #if $raw_val <= 79
+                                #set $val_style = "color: #4CAF50 !important;"
+                            #elif $raw_val <= 99
+                                #set $val_style = "color: #FF9800 !important;"
+                            #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if                              
+                            
+                        ## tvoc_in
+                        #elif $n == 'tvoc_in' and $raw_val is not None
+                            #if $raw_val <= 400
+                                #set $val_style = "color: #4CAF50 !important;"
+                            #elif $raw_val <= 1200
+                                #set $val_style = "color: #FF9800 !important;"
+                            #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if                                  
+                            
+                        ## aqi_in
+                        #elif $n == 'aqi_in' and $raw_val is not None
+                            #if $raw_val <= 2.5
+                                #set $val_style = "color: #4CAF50 !important;"
+                            #elif $raw_val <= 3.5
+                                #set $val_style = "color: #FF9800 !important;"
+                            #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if                                                                                                                                    
+                            
+                        ## pm2_5_in
+                        #elif $n == 'pm2_5_in' and $raw_val is not None
+                            #if $raw_val <= 15
+                                #set $val_style = "color: #4CAF50 !important;"
+                            #elif $raw_val <= 35
+                                #set $val_style = "color: #FF9800 !important;"
+                            #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if
+                            
+                        ## pm10_0_in
+                        #elif $n == 'pm10_0_in' and $raw_val is not None
+                            #if $raw_val <= 25
+                                #set $val_style = "color: #4CAF50 !important;"
+                            #elif $raw_val <= 50
+                                #set $val_style = "color: #FF9800 !important;"
+                            #else
+                                #set $val_style = "color: #F44336 !important;"
+                            #end if                                
+                            
+                            
+                                   
                             
                         #end if
                         ## --- LOGIK ENDE ---
