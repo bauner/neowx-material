@@ -301,4 +301,20 @@ href="img/splash/splash_1536x2048.png"
         user-select: none;         /* Standard */
         -webkit-tap-highlight-color: transparent; /* Removes the gray flash on mobile tap */
     }
+
+/* Überschriften in den Karten (nur im Light Mode) */
+body:not(.dark-theme) .card-title,
+body:not(.dark-theme) .card-header,
+body:not(.dark-theme) .card h1,
+body:not(.dark-theme) .card h2,
+body:not(.dark-theme) .card h3,
+body:not(.dark-theme) .card h4,
+body:not(.dark-theme) .card h5,
+body:not(.dark-theme) .card h6 {
+    color: #000000 !important;
+}
+
+body:not(.dark-theme) .apexcharts-title-text {
+    fill: #000000 !important;
+}    
 </style>
