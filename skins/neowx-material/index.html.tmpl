@@ -1384,5 +1384,142 @@
         <script src="$Extras.MQTT.paho_mqtt_url" type="text/javascript"></script>
         <script type="text/javascript" src="js/weewx-mqtt.js?v=$Extras.version"></script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // Hilfsfunktion für identische Temperatur-Farben
+    const getTempColor = (val) => {
+        if (val <= 0)  return '#3f51b5'; // Dunkelblau
+        if (val <= 18) return '#2196f3'; // Hellblau
+        if (val <= 22) return '#4CAF50'; // Grün
+        if (val <= 25) return '#FF9800'; // Orange
+        return '#F44336';                // Rot
+    };
+
+    // 1. Alle Farb-Logiken aus dem Cheetah-Template in JavaScript übersetzt
+    const sensorColorLogic = {
+        // -- Wind, Regen & Blitze --
+        'windSpeed': (val) => {
+            if (val <= 28) return '#4CAF50';
+            if (val <= 88) return '#FF9800';
+            return '#F44336';
+        },
+        'rain': (val) => {
+            if (val > 0) return '#3f51b5'; // Dunkelblau
+            return ''; // Standardfarbe, falls 0
+        },
+        'lightning_strike_count': (val) => {
+            if (val > 0) return '#f44336'; // Rot
+            return '#4caf50'; // Grün
+        },
+
+        // -- Luftqualität & Gase --
+        'sgp_voc_out': (val) => {
+            if (val <= 200) return '#4CAF50';
+            if (val <= 300) return '#FF9800';
+            return '#F44336';
+        },
+        'tvoc_out': (val) => {
+            if (val <= 150) return '#4CAF50';
+            if (val <= 250) return '#FF9800';
+            return '#F44336';
+        },
+        'sgp_nox_out': (val) => {
+            if (val <= 120) return '#4CAF50';
+            if (val <= 160) return '#FF9800';
+            return '#F44336';
+        },
+        'radon': (val) => {
+            if (val <= 150) return '#4CAF50';
+            if (val <= 300) return '#FF9800';
+            return '#F44336';
+        },
+        'pm2_5_out': (val) => {
+            if (val <= 15) return '#4CAF50';
+            if (val <= 35) return '#FF9800';
+            return '#F44336';
+        },
+        'pm10_0_out': (val) => {
+            if (val <= 25) return '#4CAF50';
+            if (val <= 50) return '#FF9800';
+            return '#F44336';
+        },
+        'co2_out': (val) => {
+            if (val <= 1000) return '#4CAF50';
+            if (val <= 2000) return '#FF9800';
+            return '#F44336';
+        },
+        'o3': (val) => {
+            if (val < 90) return '#4CAF50';
+            if (val < 120) return '#FF9800';
+            return '#F44336';
+        },
+
+        // -- Temperaturen --
+        'heatindex': getTempColor,
+        'outTemp': getTempColor,
+        'appTemp': getTempColor,
+        'windchill': getTempColor,
+
+        'dewpoint': (val) => {
+            if (val <= 15) return '#4CAF50';
+            if (val <= 17) return '#FF9800';
+            return '#F44336';
+        },
+
+        // -- Sonstiges --
+        'UV': (val) => {
+            if (val <= 2) return '#4CAF50';
+            if (val <= 5) return '#FF9800';
+            return '#F44336';
+        },
+        'outHumidityAbs': (val) => {
+            return '#3f51b5'; // Immer dunkelblau
+        }
+    };
+
+    // 2. Die Update-Funktion
+    const updateColor = (card) => {
+        const sensorName = card.dataset.name;
+        if (!sensorColorLogic[sensorName]) return;
+
+        // Finde den Text-Container (das <span> in der <h4>)
+        const valSpan = card.querySelector('.h2-responsive span') || card.querySelector('.h2-responsive');
+        if (!valSpan) return;
+
+        let textValue = valSpan.innerText || valSpan.textContent;
+        // Komma in Punkt umwandeln (für deutsche Zahlen) und alles außer Zahlen entfernen
+        let cleanText = textValue.replace(',', '.').replace(/[^0-9.-]/g, '');
+        let rawVal = parseFloat(cleanText);
+
+        if (!isNaN(rawVal)) {
+            let newColor = sensorColorLogic[sensorName](rawVal);
+            if (newColor !== '') {
+                valSpan.style.setProperty('color', newColor, 'important');
+            } else {
+                valSpan.style.removeProperty('color');
+            }
+        }
+    };
+
+    // 3. Der Wachhund (MutationObserver)
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            // Sucht nach der übergeordneten Karte des geänderten Elements
+            const card = mutation.target.closest('.card-value');
+            if (card) updateColor(card);
+        });
+    });
+
+    // 4. Initialisieren und Überwachung starten
+    document.querySelectorAll('.card-value').forEach(card => {
+        // Einmal beim Laden ausführen (doppelt hält besser)
+        updateColor(card);
+        // Dann auf MQTT-Änderungen lauschen
+        observer.observe(card, { childList: true, characterData: true, subtree: true });
+    });
+});
+</script>
+
     </body>
 </html>
