@@ -1640,6 +1640,118 @@
 
         <script src="$Extras.MQTT.paho_mqtt_url" type="text/javascript"></script>
         <script type="text/javascript" src="js/weewx-mqtt.js?v=$Extras.version"></script>
+<script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            // Hilfsfunktionen für wiederkehrende Farb-Logiken
+            const getTempColor = (v) => {
+                if (v <= 0) return '#3f51b5'; // dunkelblau
+                if (v <= 18) return '#2196f3'; // hellblau
+                if (v <= 22) return '#4CAF50'; // grün
+                if (v <= 25) return '#FF9800'; // orange
+                return '#F44336'; // rot
+            };
 
+            const getHumidColor = (v) => {
+                if (v < 30) return '#F44336';  // zu trocken -> rot
+                if (v <= 39) return '#FF9800'; // etwas zu trocken -> orange
+                if (v <= 60) return '#4CAF50'; // optimal -> grün
+                if (v <= 69) return '#FF9800'; // etwas zu feucht -> orange
+                return '#F44336';              // zu feucht -> rot
+            };
+
+            // Mapping der Sensoren zu ihren Farb-Schwellenwerten
+            const colorRules = {
+                // Wind & Wetter
+                'windSpeed': (v) => v <= 28 ? '#4CAF50' : (v <= 88 ? '#FF9800' : '#F44336'),
+                'rain': (v) => v > 0 ? '#3f51b5' : '',
+                'lightning_strike_count': (v) => v > 0 ? '#F44336' : '#4CAF50',
+                'dewpoint': (v) => v <= 15 ? '#4CAF50' : (v <= 17 ? '#FF9800' : '#F44336'),
+                'UV': (v) => v <= 2 ? '#4CAF50' : (v <= 5 ? '#FF9800' : '#F44336'),
+
+                // Gase & Luftqualität
+                'sgp_voc_out': (v) => v <= 200 ? '#4CAF50' : (v <= 300 ? '#FF9800' : '#F44336'),
+                'tvoc_out': (v) => v <= 150 ? '#4CAF50' : (v <= 250 ? '#FF9800' : '#F44336'),
+                'sgp_nox_out': (v) => v <= 120 ? '#4CAF50' : (v <= 160 ? '#FF9800' : '#F44336'),
+                'aqi_in': (v) => v <= 2.5 ? '#4CAF50' : (v <= 3.5 ? '#FF9800' : '#F44336'),
+                'radon': (v) => v <= 150 ? '#4CAF50' : (v <= 300 ? '#FF9800' : '#F44336'),
+                'pm2_5_out': (v) => v <= 15 ? '#4CAF50' : (v <= 35 ? '#FF9800' : '#F44336'),
+                'pm10_0_out': (v) => v <= 25 ? '#4CAF50' : (v <= 50 ? '#FF9800' : '#F44336'),
+                'pm2_5_in': (v) => v <= 15 ? '#4CAF50' : (v <= 35 ? '#FF9800' : '#F44336'),
+                'pm10_0_in': (v) => v <= 25 ? '#4CAF50' : (v <= 50 ? '#FF9800' : '#F44336'),
+                'co2_out': (v) => v <= 1000 ? '#4CAF50' : (v <= 2000 ? '#FF9800' : '#F44336'),
+                'o3': (v) => v < 90 ? '#4CAF50' : (v < 120 ? '#FF9800' : '#F44336'),
+                'co2_in': (v) => v <= 1000 ? '#4CAF50' : (v <= 2000 ? '#FF9800' : '#F44336'),
+                'co': (v) => v <= 30 ? '#4CAF50' : (v <= 50 ? '#FF9800' : '#F44336'),
+                'tvoc_in': (v) => v <= 400 ? '#4CAF50' : (v <= 1200 ? '#FF9800' : '#F44336'),
+                'ch2o': (v) => v <= 79 ? '#4CAF50' : (v <= 99 ? '#FF9800' : '#F44336'),
+                'o2': (v) => v <= 18.0 ? '#F44336' : (v <= 20.0 ? '#FF9800' : '#4CAF50'),
+
+                // Temperaturen
+                'outTemp': getTempColor,
+                'appTemp': getTempColor,
+                'heatindex': getTempColor,
+                'windchill': getTempColor,
+                'inTemp': getTempColor,
+                'extraTemp1': getTempColor,
+                'extraTemp2': getTempColor,
+                'extraTemp3': getTempColor,
+                'extraTemp4': getTempColor,
+
+                // Feuchtigkeiten absolut/relativ
+                'inHumidity': getHumidColor,
+                'extraHumid1': getHumidColor,
+                'extraHumid2': getHumidColor,
+                'extraHumid3': getHumidColor,
+                'extraHumid4': getHumidColor,
+                'outHumidityAbs': (v) => '#3f51b5',
+                'inHumidityAbs': (v) => '#3f51b5'
+            };
+
+            // Funktion zum Evaluieren und Anwenden der Farbe
+            const applyColor = (targetNode) => {
+                let card = targetNode.nodeType === Node.ELEMENT_NODE ? targetNode.closest('.card-value') : targetNode.parentElement.closest('.card-value');
+                if (!card) return;
+
+                let sensorName = card.getAttribute('data-name');
+                if (!colorRules[sensorName]) return;
+
+                // MQTT updatet teilweise nur den Text oder wirft das span weg. 
+                // Deshalb fokussieren wir bevorzugt auf das span, fallback auf h2-responsive.
+                let textContainer = card.querySelector('.h2-responsive span') || card.querySelector('.h2-responsive');
+                if (textContainer) {
+                    let textVal = textContainer.innerText || textContainer.textContent;
+                    
+                    // Bereinigen: Alle Buchstaben/Einheiten weg, Komma zu Punkt für ParseFloat
+                    let numVal = parseFloat(textVal.replace(/[^0-9.,-]/g, '').replace(',', '.'));
+                    
+                    if (!isNaN(numVal)) {
+                        let newColor = colorRules[sensorName](numVal);
+                        if (newColor) {
+                            textContainer.style.setProperty('color', newColor, 'important');
+                        }
+                    }
+                }
+            };
+
+            // MutationObserver lauscht auf live DOM-Änderungen von WebSockets/MQTT
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'characterData' || mutation.type === 'childList') {
+                        applyColor(mutation.target);
+                    }
+                });
+            });
+
+            // Container überwachen
+            const container = document.querySelector('main');
+            if (container) {
+                observer.observe(container, { 
+                    childList: true, 
+                    subtree: true, 
+                    characterData: true 
+                });
+            }
+        });
+        </script>
     </body>
 </html>
