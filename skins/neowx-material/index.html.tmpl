@@ -105,8 +105,21 @@
     #if not ($_nm in ('hr', 'hrc') or $_nm[:3] in ('hr:', 'hr ') or $_nm[:4] in ('hrc:', 'hrc '))
         ## ET requires a valid positive sum to be shown
         #if $getVar('day.' + name + '.has_data') and ($name != 'ET' or ($day.ET.sum.raw is not None and $day.ET.sum.raw >= 0.0))
+        ## --- NEU: MQTT Dummy und Schutz ---
+            #set $mqtt_data_name = $name
+            #if $name == 'lightning_strike_count'
+                ## Die sichtbare Karte vor MQTT verstecken
+                #set $mqtt_data_name = $name + '_ignore_mqtt'
+                
+                ## Den unsichtbaren Dummy-Empfänger für MQTT platzieren
+                <div class="card-value" id="mqtt-dummy-lightning" data-name="lightning_strike_count" style="display: none;">
+                    <span class="value">0</span>
+                </div>
+            #end if
+            ## ----------------------------------
             <div class="col-12 col-md-6 col-xl-4 mb-4">
-                <div class="card card-value" id="${name}-value" data-name="$name">
+            ## HIER das data-name Attribut auf die neue Variable ändern!
+                <div class="card card-value" id="${name}-value" data-name="$mqtt_data_name">
                     <div class="card-body text-center">
                         <h3 class="h5-responsive $Extras.color-text">
                             $getVar('obs.label.' + name)
@@ -215,7 +228,8 @@
                     <div class="col-3 text-muted font-small lo-text"></div>
                     <div class="col-6">
                         <h4 class="h2-responsive">
-                            <span style="$val_style">$getVar('day.' + name + '.sum')</span>
+                        ## --- NEU: ID und data-sum hinzugefügt ---
+                            <span id="real-lightning-sum" style="$val_style" data-sum="${day.lightning_strike_count.sum.raw or 0}">$getVar('day.' + name + '.sum')</span>
                         </h4>
                     </div>
                     <div class="col-3 text-muted font-small hi-text"></div>
@@ -1509,143 +1523,136 @@
 
         <script src="$Extras.MQTT.paho_mqtt_url" type="text/javascript"></script>
         <script type="text/javascript" src="js/weewx-mqtt.js?v=$Extras.version"></script>
+<script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // ==========================================
+            // TEIL 1: DYNAMISCHE FARBEN
+            // ==========================================
+            
+            const getTempColor = (v) => {
+                if (v <= 0) return '#3f51b5';
+                if (v <= 18) return '#2196f3';
+                if (v <= 22) return '#4CAF50';
+                if (v <= 25) return '#FF9800';
+                return '#F44336';
+            };
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    
-    // Hilfsfunktion für identische Temperatur-Farben
-    const getTempColor = (val) => {
-        if (val <= 0)  return '#3f51b5'; // Dunkelblau
-        if (val <= 18) return '#2196f3'; // Hellblau
-        if (val <= 22) return '#4CAF50'; // Grün
-        if (val <= 25) return '#FF9800'; // Orange
-        return '#F44336';                // Rot
-    };
+            const getHumidColor = (v) => {
+                if (v < 30) return '#F44336'; 
+                if (v <= 39) return '#FF9800';
+                if (v <= 60) return '#4CAF50';
+                if (v <= 69) return '#FF9800';
+                return '#F44336';             
+            };
 
-    // 1. Alle Farb-Logiken aus dem Cheetah-Template in JavaScript übersetzt
-    const sensorColorLogic = {
-        // -- Wind, Regen & Blitze --
-        'windSpeed': (val) => {
-            if (val <= 28) return '#4CAF50';
-            if (val <= 88) return '#FF9800';
-            return '#F44336';
-        },
-        'rain': (val) => {
-            if (val > 0) return '#3f51b5'; // Dunkelblau
-            return ''; // Standardfarbe, falls 0
-        },
-        'lightning_strike_count': (val) => {
-            if (val > 0) return '#f44336'; // Rot
-            return '#4caf50'; // Grün
-        },
+            const colorRules = {
+                'windSpeed': (v) => v <= 28 ? '#4CAF50' : (v <= 88 ? '#FF9800' : '#F44336'),
+                'rain': (v) => v > 0 ? '#3f51b5' : '',
+                'lightning_strike_count': (v) => v > 0 ? '#F44336' : '#4CAF50',
+                'dewpoint': (v) => v <= 15 ? '#4CAF50' : (v <= 17 ? '#FF9800' : '#F44336'),
+                'UV': (v) => v <= 2 ? '#4CAF50' : (v <= 5 ? '#FF9800' : '#F44336'),
+                'sgp_voc_out': (v) => v <= 200 ? '#4CAF50' : (v <= 300 ? '#FF9800' : '#F44336'),
+                'tvoc_out': (v) => v <= 150 ? '#4CAF50' : (v <= 250 ? '#FF9800' : '#F44336'),
+                'sgp_nox_out': (v) => v <= 120 ? '#4CAF50' : (v <= 160 ? '#FF9800' : '#F44336'),
+                'radon': (v) => v <= 150 ? '#4CAF50' : (v <= 300 ? '#FF9800' : '#F44336'),
+                'pm2_5_out': (v) => v <= 15 ? '#4CAF50' : (v <= 35 ? '#FF9800' : '#F44336'),
+                'pm10_0_out': (v) => v <= 25 ? '#4CAF50' : (v <= 50 ? '#FF9800' : '#F44336'),
+                'co2_out': (v) => v <= 1000 ? '#4CAF50' : (v <= 2000 ? '#FF9800' : '#F44336'),
+                'o3': (v) => v < 90 ? '#4CAF50' : (v < 120 ? '#FF9800' : '#F44336'),
+                'outTemp': getTempColor,
+                'appTemp': getTempColor,
+                'heatindex': getTempColor,
+                'windchill': getTempColor,
+                'outHumidityAbs': (v) => '#3f51b5'
+            };
 
-        // -- Luftqualität & Gase --
-        'sgp_voc_out': (val) => {
-            if (val <= 200) return '#4CAF50';
-            if (val <= 300) return '#FF9800';
-            return '#F44336';
-        },
-        'tvoc_out': (val) => {
-            if (val <= 150) return '#4CAF50';
-            if (val <= 250) return '#FF9800';
-            return '#F44336';
-        },
-        'sgp_nox_out': (val) => {
-            if (val <= 120) return '#4CAF50';
-            if (val <= 160) return '#FF9800';
-            return '#F44336';
-        },
-        'radon': (val) => {
-            if (val <= 150) return '#4CAF50';
-            if (val <= 300) return '#FF9800';
-            return '#F44336';
-        },
-        'pm2_5_out': (val) => {
-            if (val <= 15) return '#4CAF50';
-            if (val <= 35) return '#FF9800';
-            return '#F44336';
-        },
-        'pm10_0_out': (val) => {
-            if (val <= 25) return '#4CAF50';
-            if (val <= 50) return '#FF9800';
-            return '#F44336';
-        },
-        'co2_out': (val) => {
-            if (val <= 1000) return '#4CAF50';
-            if (val <= 2000) return '#FF9800';
-            return '#F44336';
-        },
-        'o3': (val) => {
-            if (val < 90) return '#4CAF50';
-            if (val < 120) return '#FF9800';
-            return '#F44336';
-        },
+            const applyColor = (targetNode) => {
+                let card = targetNode.nodeType === Node.ELEMENT_NODE ? targetNode.closest('.card-value') : targetNode.parentElement.closest('.card-value');
+                if (!card) return;
 
-        // -- Temperaturen --
-        'heatindex': getTempColor,
-        'outTemp': getTempColor,
-        'appTemp': getTempColor,
-        'windchill': getTempColor,
+                let sensorName = card.getAttribute('data-name');
+                if (!colorRules[sensorName]) return;
 
-        'dewpoint': (val) => {
-            if (val <= 15) return '#4CAF50';
-            if (val <= 17) return '#FF9800';
-            return '#F44336';
-        },
+                let textContainer = card.querySelector('.h2-responsive span') || card.querySelector('.h2-responsive');
+                if (textContainer) {
+                    let textVal = textContainer.innerText || textContainer.textContent;
+                    let numVal = parseFloat(textVal.replace(/[^0-9.,-]/g, '').replace(',', '.'));
+                    
+                    if (!isNaN(numVal)) {
+                        let newColor = colorRules[sensorName](numVal);
+                        if (newColor) {
+                            textContainer.style.setProperty('color', newColor, 'important');
+                        }
+                    }
+                }
+            };
 
-        // -- Sonstiges --
-        'UV': (val) => {
-            if (val <= 2) return '#4CAF50';
-            if (val <= 5) return '#FF9800';
-            return '#F44336';
-        },
-        'outHumidityAbs': (val) => {
-            return '#3f51b5'; // Immer dunkelblau
-        }
-    };
+            const colorObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'characterData' || mutation.type === 'childList') {
+                        applyColor(mutation.target);
+                    }
+                });
+            });
 
-    // 2. Die Update-Funktion
-    const updateColor = (card) => {
-        const sensorName = card.dataset.name;
-        if (!sensorColorLogic[sensorName]) return;
-
-        // Finde den Text-Container (das <span> in der <h4>)
-        const valSpan = card.querySelector('.h2-responsive span') || card.querySelector('.h2-responsive');
-        if (!valSpan) return;
-
-        let textValue = valSpan.innerText || valSpan.textContent;
-        // Komma in Punkt umwandeln (für deutsche Zahlen) und alles außer Zahlen entfernen
-        let cleanText = textValue.replace(',', '.').replace(/[^0-9.-]/g, '');
-        let rawVal = parseFloat(cleanText);
-
-        if (!isNaN(rawVal)) {
-            let newColor = sensorColorLogic[sensorName](rawVal);
-            if (newColor !== '') {
-                valSpan.style.setProperty('color', newColor, 'important');
-            } else {
-                valSpan.style.removeProperty('color');
+            const container = document.querySelector('main');
+            if (container) {
+                colorObserver.observe(container, { 
+                    childList: true, 
+                    subtree: true, 
+                    characterData: true 
+                });
             }
-        }
-    };
 
-    // 3. Der Wachhund (MutationObserver)
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            // Sucht nach der übergeordneten Karte des geänderten Elements
-            const card = mutation.target.closest('.card-value');
-            if (card) updateColor(card);
-        });
-    });
 
-    // 4. Initialisieren und Überwachung starten
-    document.querySelectorAll('.card-value').forEach(card => {
-        // Einmal beim Laden ausführen (doppelt hält besser)
-        updateColor(card);
-        // Dann auf MQTT-Änderungen lauschen
-        observer.observe(card, { childList: true, characterData: true, subtree: true });
-    });
-});
-</script>
+            // ==========================================
+            // TEIL 2: LIVE-AKKUMULATOR FÜR BLITZE (Neu)
+            // ==========================================
+            
+            const lightningDummy = document.querySelector('#mqtt-dummy-lightning');
+            const lightningDisplay = document.querySelector('#real-lightning-sum');
 
+            if (lightningDummy && lightningDisplay) {
+                // Den initialen Startwert von WeeWX auslesen
+                let currentSum = parseFloat(lightningDisplay.getAttribute('data-sum')) || 0;
+                let lastLoopValue = 0; // Verhindert doppeltes Zählen desselben Datenpakets
+
+                const lightningObserver = new MutationObserver(() => {
+                    // Den aktuellen Live-Wert aus dem Dummy auslesen
+                    let loopStrikes = parseFloat(lightningDummy.innerText.replace(/[^0-9.,-]/g, ''));
+                    
+                    // Wenn es eine gültige Zahl > 0 ist UND sich vom letzten Paket unterscheidet
+                    if (!isNaN(loopStrikes) && loopStrikes > 0 && loopStrikes !== lastLoopValue) {
+                        
+                        // Blitze zur Tagessumme addieren
+                        currentSum += loopStrikes;
+                        
+                        // Anzeige im HTML aktualisieren (als Ganzzahl)
+                        lightningDisplay.innerText = Math.round(currentSum);
+                        
+                        // Wert im data-Attribut für den nächsten Durchlauf speichern
+                        lightningDisplay.setAttribute('data-sum', currentSum);
+                        
+                        // Die Zahl sofort rot einfärben, da es gerade geblitzt hat
+                        lightningDisplay.style.setProperty('color', '#F44336', 'important');
+                    }
+                    
+                    // Letzten Loop-Wert merken (meist springt er beim nächsten Paket zurück auf 0)
+                    if (!isNaN(loopStrikes)) {
+                        lastLoopValue = loopStrikes;
+                    }
+                });
+
+                // Den unsichtbaren Dummy überwachen
+                lightningObserver.observe(lightningDummy, { 
+                    childList: true, 
+                    subtree: true, 
+                    characterData: true 
+                });
+            }
+
+        }); // <-- Hier endet der gemeinsame DOMContentLoaded-Block für beide Skripte!
+        </script>
     </body>
 </html>
