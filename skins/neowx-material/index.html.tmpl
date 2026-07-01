@@ -1927,7 +1927,33 @@
                     characterData: true 
                 });
             }
+            // ==========================================
+            // TEIL 3: SCROLL-LINK FÜR BLITZE REPARIEREN
+            // ==========================================
+            const lightningCard = document.getElementById('lightning_strike_count-value');
+            const lightningChart = document.getElementById('lightning_strike_count-chart');
 
+            if (lightningCard && lightningChart) {
+                // Den Mauszeiger wieder auf die "klickbare Hand" umstellen
+                lightningCard.style.cursor = 'pointer';
+                lightningChart.style.cursor = 'pointer';
+
+                // Klick auf die Karte -> Scrollt zum Diagramm
+                lightningCard.addEventListener('click', () => {
+                    lightningChart.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Den originalen Aufleucht-Effekt des Skins (card-highlight) nutzen
+                    lightningChart.classList.add('card-highlight');
+                    setTimeout(() => lightningChart.classList.remove('card-highlight'), 1500);
+                });
+
+                // Klick auf das Diagramm -> Scrollt zurück zur Karte
+                lightningChart.addEventListener('click', () => {
+                    lightningCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Den originalen Aufleucht-Effekt anwenden
+                    lightningCard.classList.add('card-highlight');
+                    setTimeout(() => lightningCard.classList.remove('card-highlight'), 1500);
+                });
+            }
         }); // <-- Hier endet der gemeinsame DOMContentLoaded-Block für beide Skripte!
         </script>
     </body>
