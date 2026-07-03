@@ -172,14 +172,6 @@
                                     $avg_tvoc_out_table
                                 </div>
                             #end if
-
-                            #if $alltime.sgp_voc_out.has_data
-                                <div class="card card-body">
-                                    <h4 class="h5-responsive $Extras.color-text"><i class="wi wi-dust"></i>
-                                    VOC Index Außen Durchschnitt</h4>
-                                    $avg_sgp_voc_out_table
-                                </div>
-                            #end if
                             
                             #if $alltime.pm2_5_in.has_data
                                 <div class="card card-body">
@@ -522,25 +514,6 @@
                         <td style="font-size:16px;">$year.tvoc_out.mintime</td>
                     </tr>
                     #end if                    
-
-
-                   #if $year.sgp_voc_out.has_data
-                    <tr>
-                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
-                            <i class="wi wi-dust"></i> VOC Index Außen
-                        </th>
-                    </tr>
-                    <tr>
-                        <td style="font-size:16px;">$gettext("highest")</td>
-                        <td style="font-size:16px;">$year.sgp_voc_out.max</td>
-                        <td style="font-size:16px;">$year.sgp_voc_out.maxtime</td>
-                    </tr>
-                    <tr>
-                        <td style="font-size:16px;">$gettext("lowest")</td>
-                        <td style="font-size:16px;">$year.sgp_voc_out.min</td>
-                        <td style="font-size:16px;">$year.sgp_voc_out.mintime</td>
-                    </tr>
-                    #end if
 
                    #if $year.pm2_5_in.has_data
                     <tr>
@@ -970,24 +943,6 @@
                         <td style="font-size:16px;">$alltime.tvoc_out.mintime</td>
                     </tr>
                     #end if                                           
-
-                    #if $alltime.sgp_voc_out.has_data
-                    <tr>
-                        <th colspan="3" class="$Extras.color-text" style="text-align:left;font-size:20px;">
-                            <i class="wi wi-dust"></i> VOC Index Außen
-                        </th>
-                    </tr>
-                    <tr>
-                        <td style="font-size:16px;">$gettext("highest")</td>
-                        <td style="font-size:16px;">$alltime.sgp_voc_out.max</td>
-                        <td style="font-size:16px;">$alltime.sgp_voc_out.maxtime</td>
-                    </tr>
-                    <tr>
-                        <td style="font-size:16px;">$gettext("lowest")</td>
-                        <td style="font-size:16px;">$alltime.sgp_voc_out.min</td>
-                        <td style="font-size:16px;">$alltime.sgp_voc_out.mintime</td>
-                    </tr>
-                    #end if      
 
                     #if $alltime.pm2_5_in.has_data
                     <tr>
