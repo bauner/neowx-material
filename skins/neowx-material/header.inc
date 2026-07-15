@@ -68,6 +68,7 @@
                     <!-- Row 2: Date + icons (icons column always rendered, empty on non-current pages) -->
                     <div style="display:flex; align-items:center; gap:0.4rem;">
                         #set $date_format = $Extras.Formatting.get('date', '%x')
+                        #set $always_show_status = $Extras.OnlineCheck.get('always_show_status', False)
                         #if $active_nav == 'current'
                             <div id="current-date" style="white-space:nowrap; font-size:0.95rem; color:#fff;">$current.dateTime.format($date_format)</div>
                         #else
@@ -97,7 +98,7 @@
                                                   data-toggle="tooltip" data-placement="bottom"
                                                   style="vertical-align:middle;" title="$gettext('System is offline')"></span>
                                         </div>
-                                    #elif $Extras.OnlineCheck.get('always_show_status', False)
+                                    #elif not $online_check.offline and ($always_show_status == True or str($always_show_status).lower() == 'true')
                                         <div id="online-status" class="text-white">
                                             <span class="mdi mdi-wifi"
                                                   data-toggle="tooltip" data-placement="bottom"
@@ -143,7 +144,7 @@
             </div><!-- end column 1 -->
 
             <!-- Mobile toggle button -->
-            <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse"
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
                     data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
