@@ -134,7 +134,35 @@
                             </div>
                             <div class="col-3 text-muted font-small hi-text"></div>
                         </div>
+                        #else if $name == 'lightning_distance'
 
+                        ## --- LOGIK START: Blitzentfernung (Minimum) ---
+                        #set $val_style = ""
+                        #set $raw_val = $month.lightning_distance.min.raw
+
+                        #if $raw_val is not None
+                            #if $raw_val <= 5.0
+                                #set $val_style = "color: #F44336 !important;"
+                            #elif $raw_val <= 10.0
+                                #set $val_style = "color: #FF9800 !important;"
+                            #else
+                                #set $val_style = "color: #4CAF50 !important;"
+                            #end if
+                        #end if
+                        ## --- LOGIK ENDE ---
+
+                        <div class="row">
+                            <div class="col-3 text-muted font-small lo-text"></div>
+                            <div class="col-6">
+                                <h4 class="h2-responsive">
+                                    <span style="$val_style">$month.lightning_distance.min</span>
+                                </h4>
+                            </div>
+                            <div class="col-3 text-muted font-small hi-text">
+                                Nähester Einschlag<br>
+                                ($month.lightning_distance.mintime.format($card_datetime))
+                            </div>
+                        </div>
                     #else
                         ## --- LOGIK START: Restliche Sensoren (Durchschnitt) ---
                         #set $n = $name.strip()
